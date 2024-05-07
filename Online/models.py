@@ -1,35 +1,51 @@
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import date
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=16)
-    first = models.CharField(max_length=33)
-    last = models.CharField(33)
-    country = models.CharField(max_length=22)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=9)
+    country = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=32)
+    last_name = models.CharField(max_length=32)
 
+    def __str__(self):
+        return f'{self.user} | {self.country}'
 
 class Category(models.Model):
     name = models.CharField(max_length=16)
 
+    def __str__(self):
+        return self.name
+
 
 class Actor(models.Model):
     name = models.CharField(max_length=16)
-    age = models.ImageField()
+    age = models.PositiveSmallIntegerField(default=0)
     description = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(blank=True, null=True)
+
+
+    def __str__(self):
+        return self.name
 
 
 class Director(models.Model):
     name = models.CharField(max_length=16)
-    age = models.ImageField()
+    age = models.PositiveSmallIntegerField(default=0)
     description = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(blank=True, null=True)
 
+
+    def __str__(self):
+        return self.name
 
 class Genre(models.Model):
     name = models.CharField(max_length=16)
+
+    def __str__(self):
+        return self.name
 
 
 class Movie(models.Model):
@@ -50,22 +66,34 @@ class Movie(models.Model):
     category = models.ForeignKey(on_delete=models.SET_NULL, null=True)
 
 
+    def __str__(self):
+        return self.title
+
+
 class MovieShots(models.Model):
     title = models.CharField()
     description = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(blank=True, null=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
+
+    def __str__(self):
+        return self.title
 
 
 class Rating(models.Model):
-    value = models.SmallIntegerField(default=0)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    movies = models.ForeignKey(Movie, on_delete=models.CASCADE, default=None)
+    star = models.IntegerField(choices=[(i, str(i)) for i in range(1,11)], help_text='Оценка', verbose_name='Rating')
+    def __str__(self):
+        return f'{self.user} | {self.movies}'
+
 
 
 class Review(models.Model):
-    name = models.CharField(max_length=16)
-    text = models.TextField(max_length=100)
-    parent = models.ForeignKey(
-        'self', verbose_name="", on_delete=models.SET_NULL, blank=True, null=True
-    )
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
+    name = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    text = models.TextField(max_length=1000)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, related_name='reviews', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.name} - {self.movie}"
