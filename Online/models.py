@@ -54,7 +54,7 @@ class Movie(models.Model):
     description = models.TextField()
     poster = models.ImageField(upload_to="movies")
     year = models.IntegerField()
-    country = models.CharField
+    country = models.CharField(max_length=130)
     directors = models.ManyToManyField(Actor, verbose_name="режиссер", related_name="film_direct")
     actors = models.ManyToManyField(Actor, verbose_name="актеры", related_name="film_actor")
     genres = models.ManyToManyField(Genre, verbose_name="жанры")
@@ -63,7 +63,7 @@ class Movie(models.Model):
     fess_in_world = models.PositiveIntegerField(
         "Сборы в мире", default=0, help_text="указывать сумму в долларах"
     )
-    category = models.ForeignKey(on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
 
 
     def __str__(self):
@@ -71,7 +71,7 @@ class Movie(models.Model):
 
 
 class MovieShots(models.Model):
-    title = models.CharField()
+    title = models.CharField(max_length=16)
     description = models.TextField()
     image = models.ImageField(blank=True, null=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
@@ -91,7 +91,7 @@ class Rating(models.Model):
 
 class Review(models.Model):
     name = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    text = models.TextField(max_length=1000)
+    text = models.TextField()
     parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, related_name='reviews', on_delete=models.CASCADE)
 

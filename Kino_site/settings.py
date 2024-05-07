@@ -63,7 +63,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = 'Lesson_Movie_Site.urls'
+ROOT_URLCONF = 'Kino_site.urls'
 
 TEMPLATES = [
     {
@@ -81,7 +81,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Lesson_Movie_Site.wsgi.application'
+WSGI_APPLICATION = 'Kino_site.wsgi.application'
 
 
 # Database
